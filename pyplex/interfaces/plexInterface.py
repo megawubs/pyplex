@@ -2,10 +2,11 @@ import urllib2, re, xml.etree.cElementTree as et
 from urllib import urlencode
 from urlparse import urlparse
 import uuid, hmac, hashlib, base64, time
-from plexAPI.server import Server
-
-from ..pyplexlogger.logger import pyPlexLogger
 from pprint import pprint
+
+from server import Server
+from ..pyplexlogger.logger import pyPlexLogger
+
 class PlexMedia:
     def __init__(self, mediaurl, serverSceme):
         self.l = pyPlexLogger("PlexMedia").logger

@@ -41,9 +41,6 @@ class Info(object):
 	 	self.info['transcodeURL'] = self.getTranscodeURL()
 
 	 	self.info['fileURL'] = "%s%s" % (self.serverAddr, element.find('.Media/Part').attrib['key'])
-
-	 	self.info['setPlayed'] = getattr(self, setPlayed)
-	 	self.info['updatePosition'] = getattr(self, updatePosition)
 	def getTranscodeURL(self, extension='mkv', format='matroska', videoCodec='libx264', audioCodec=None, continuePlay=False, continueTime=None, videoWidth='1280', videoHeight='720', videoBitrate=None):
 		if(videoWidth > self.info['width']):
 			videoWidth = self.info['width']
@@ -75,21 +72,6 @@ class Info(object):
 		plexAccess['X-Plex-Client-Capabilities'] = 'protocols=http-live-streaming,http-mp4-streaming,http-mp4-video,http-mp4-video-720p,http-streaming-video,http-streaming-video-720p;videoDecoders=h264{profile:high&resolution:1080&level:41};audioDecoders=aac,mp3,ac3,dts'
 		transcodeURL = transcodeURL + "&" + urlencode(plexAccess)
 		return "%s%s" % (self.serverAddr, transcodeURL)
-
-
-	def setPlayed(self):
-		try:
-			f = urllib2.urlopen(self.playedURL)
-		except urllib2.HTTPError:
-			print "Failed to update plex that item was played: %s" % setPlayPos
-			pass
-
-	def updatePosition(self, posMilli):
-		try:
-			f = urllib2.urlopen((self.updateURL % (posMilli)))
-		except urllib2.HTTPError:
-			print "Failed to update plex play time, url: %s" % setPlayPos
-			pass
 
 	def __str__(self):
 		return self.str % (self.info['type'], self.info['title'])

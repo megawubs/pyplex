@@ -1,5 +1,5 @@
 from ..interfaces.plexInterface import PlexInterface
-from ..interfaces.plexAPI.server import Server
+from ..interfaces.server import Server
 from ..pyomx.pyomxplayer import OMXPlayer
 from urlparse import urlparse
 from ..pyplexlogger.logger import pyPlexLogger
@@ -10,7 +10,6 @@ class xbmcCommands:
         self.l = pyPlexLogger("xbmcCommands").logger
         self.l.info('Initated xbmcCommands')
         self.media = None
-        self.plex = PlexInterface()
         self.omx = None
         self.omxArgs = omxArgs
         self.shutDown = False
@@ -20,19 +19,20 @@ class xbmcCommands:
         global parsed_path
         global media_key
         global duration
+        global media
         
         parsed_path = urlparse(fullpath)
         # get info to locate the server
         ip, port = parsed_path.netloc.split(':')
         # initate the plex API server wrapper
-        server = Server(ip, port)
+        self.plex = Server(ip, port)
         # Serach for media based on tag
-        media = server.getMedia(tag) #Media now contains all kind of information about the file
+        self.media = self.plex.getMedia(tag) #Media now contains all kind of information about the file
         # media.transcodeURL is currentley not working
         if(self.omx):
             self.Stop()
 
-        self.omx = OMXPlayer(media.fileURL, args=self.omxArgs, start_playback=True)
+        self.omx = OMXPlayer(self.media.fileURL, args=self.omxArgs, start_playback=True)
 
     def Pause(self, message):
         if(self.omx):
@@ -89,7 +89,7 @@ class xbmcCommands:
         return self.getMilliseconds(self.omx.position)
     
     def setPlayed(self):
-        self.media.setPlayed()
+        self.plex.execute(self.media.updateURL)
 
     def isFinished(self):
         if(self.omx):
@@ -104,12 +104,15 @@ class xbmcCommands:
         return False
 
     def updatePosition(self):
-        if self.isFinished():
-            if (self.getPosMilli() > (self.media.duration * .95)):
-                self.setPlayed()
-            self.Stop()
-        else:
-            self.media.updatePosition(self.getPosMilli())
+        try:
+            if self.isFinished():
+                if (self.getPosMilli() > (self.media.duration * .95)):
+                    self.plex.execute(self.media.scrobbleURL % self.media.key)
+                self.Stop()
+            else:
+                self.plex.execute(self.media.updateURL % (self.media.key, self.getPosMilli()))
+        except Exception, e:
+            print e
 
 # test = xbmcCommands('')
 # test.PlayMedia('http://192.168.1.201:32400/library/onDeck', '/library/metadata/1713', '+', ' ', ' ')

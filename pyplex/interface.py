@@ -4,7 +4,7 @@ import platform
 from listeners.udplistener import udplistener
 from listeners.httplistener import httplistener
 from service.zeroconf import ZeroconfService
-import Queue
+import Queue, sys
 from pprint import pprint
 from pyplexlogger.logger import pyPlexLogger
 # from interfaces.plexInterface import plexInterface
@@ -49,14 +49,22 @@ class pyPlex():
 		self.l.info("Running pyplex")
 		try:
 			while True:
+				if(self.xbmcCmmd.isRunning()):
+					self.xbmcCmmd.updatePosition()
 				command = self.parseCommand()
 				if command:
 					func, args = command
+					print(func)
 					func(*args)
-					if(self.xbmcCmmd.isRunning()):
-						self.xbmcCmmd.updatePosition()
-					return self.keepRunning()			
+					if(self.xbmcCmmd.shutDown == True):
+						self.stop()
+						break
+				else:
+					print 'no command...'
 		except Exception, e:
+			exc_type, exc_obj, exc_tb = sys.exc_info()
+			fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+			print(exc_type, fname, exc_tb.tb_lineno) 
 			print "Caught exception"
 			message = 'There went something wrong in %s'
 			if(self.xbmcCmmd):
@@ -106,10 +114,12 @@ class pyPlex():
 		self.service.unpublish()
 
 	def keepRunning(self):
-		if(self.xbmcCmmd.shutDown):
-			self.stop()
-			return 0
+		if(self.xbmcCmmd.shutDown == True):
+			
+			print "Shutting down"
+			return False
 		else:
-			return 1
+			print "Keep running!"
+			return True
 
 		
