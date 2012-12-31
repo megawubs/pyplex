@@ -1,6 +1,7 @@
 import uuid, hmac, hashlib, base64, time
 from urllib import urlencode
 from urlparse import urlparse
+from pprint import pprint
 
 class Info(object):
 	"""Get info of media"""
@@ -38,9 +39,10 @@ class Info(object):
 		
 		self.info['updateURL'] =  "progress?key=%s&identifier=com.plexapp.plugins.library&time=%s&state=playing"
 	 	self.info['scrobbleURL'] = "scrobble?key=%s&identifier=com.plexapp.plugins.library"
-	 	self.info['transcodeURL'] = self.getTranscodeURL()
-
 	 	self.info['fileURL'] = "%s%s" % (self.serverAddr, element.find('.Media/Part').attrib['key'])
+	 	self.info['transcodeURL'] = self.getTranscodeURL()
+	 	
+
 	def getTranscodeURL(self, extension='mkv', format='matroska', videoCodec='libx264', audioCodec=None, continuePlay=False, continueTime=None, videoWidth='1280', videoHeight='720', videoBitrate=None):
 		if(videoWidth > self.info['width']):
 			videoWidth = self.info['width']
@@ -56,10 +58,10 @@ class Info(object):
 		args['subtitleSize'] = 125
 		args['secondsPerSegment'] = 10
 		args['ratingKey'] = self.info['ratingKey']
-		args['key'] =  self.info['key']
+		args['key'] =  self.serverAddr+self.info['key']
 		args["identifier"] = "com.plexapp.plugins.library"
 		args["quality"] = 7
-		args["url"] = self.info['file']
+		args["url"] = self.info['fileURL']
 		transcodeURL = self.server.transcodeURL
 		transcodeURL += urlencode(args)
 		atime = int(time.time())

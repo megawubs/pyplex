@@ -32,7 +32,7 @@ class xbmcCommands:
         if(self.omx):
             self.Stop()
 
-        self.omx = OMXPlayer(self.media.fileURL, args=self.omxArgs, start_playback=True)
+        self.omx = OMXPlayer(self.media.transcodeURL, args=self.omxArgs, start_playback=True)
 
     def Pause(self, message):
         if(self.omx):
