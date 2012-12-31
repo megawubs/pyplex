@@ -1,41 +1,31 @@
 from commands.xbmc import xbmcCommands
 from gui.image import image
-import platform
+import platform, Queue, sys
 from listeners.udplistener import udplistener
 from listeners.httplistener import httplistener
 from service.zeroconf import ZeroconfService, AvahiLookUp
-import Queue, sys
 from pprint import pprint
 from pyplexlogger.logger import pyPlexLogger
-# from interfaces.plexInterface import plexInterface
-# from interfaces.plexInterface
-# from listners.httplistner import
+
 class pyPlex():
 	"""Wrapper class for pyPlex"""
 	def __init__(self, arg):
 		self.l = pyPlexLogger('pyplex').logger
-		self.l.info('Pyplex initaited')
 		self.omxCommand = self.getArg(arg)
 		self.hostname = platform.uname()[1]
+		self.server = AvahiLookUp("_plexmediasvr._tcp").servers[0]
+		# TODO stop script if no server is found
+		self.l.info("located the server at %s: %d" % (self.server.address, self.server.port))
+
 
 	def start(self):
 		"""Setting up listners and all other stuff"""
-		print "Setting up listeners, please wait..."
 		self.l.info("Setting up listeners")
-		global service
-		global queue
-		global parsed_path
-		global media_key
-		global duration
-		self.server = AvahiLookUp("_plexmediasvr._tcp").servers[0]
-		pprint(self.server)
 		self.service = ZeroconfService(name=self.hostname + " PyPlex", port=3000, text=["machineIdentifier=" + self.hostname,"version=2.0"])
 		self.service.publish()
 		self.duration = 0
 		self.queue = Queue.Queue()
 		self.xbmcCmmd = xbmcCommands(self.omxCommand, self.server)
-		self.media_key = None
-		self.parsed_path = None
 		self.udp = udplistener(self.queue)
 		self.udp.start()
 		self.http = httplistener(self.queue)
@@ -51,13 +41,18 @@ class pyPlex():
 		self.l.info("Running pyplex")
 		try:
 			while True:
+				# check if xmbc is running
 				if(self.xbmcCmmd.isRunning()):
+					# update position
 					self.xbmcCmmd.updatePosition()
+				# get the command from the listneners
 				command = self.parseCommand()
 				if command:
+					# read the command and args
 					func, args = command
-					print(func)
+					# excecute the command
 					func(*args)
+					# check if pyplex has to stop
 					if(self.xbmcCmmd.shutDown == True):
 						self.stop()
 						break
@@ -96,6 +91,7 @@ class pyPlex():
 			print "Audio output over 3,5mm jack"
 
 	def parseCommand(self):
+		"""Get commands from the queue"""
 		try:
 			command, args = self.queue.get(True, 2)
 			print "Got command: %s, args: %s" %(command, args)
@@ -103,23 +99,16 @@ class pyPlex():
 				print "Command %s not implemented yet" % command
 			else:
 				func = getattr(self.xbmcCmmd, command)
+				# Retun the function + it's arguments
 				return [func, args]
 		except Queue.Empty:
 			pass
 
 	def stop(self):
+		"""Stop pyPlex"""
 		self.xbmcCmmd.Stop("")
 		self.udp.stop()
 		self.http.stop()
 		self.service.unpublish()
-
-	def keepRunning(self):
-		if(self.xbmcCmmd.shutDown == True):
-			
-			print "Shutting down"
-			return False
-		else:
-			print "Keep running!"
-			return True
 
 		
