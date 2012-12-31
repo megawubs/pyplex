@@ -1,5 +1,9 @@
-import avahi, dbus, sys, platform
+import avahi, dbus, sys, platform, gobject, threading
 from ..pyplexlogger.logger import pyPlexLogger
+from dbus import DBusException
+from dbus.mainloop.glib import DBusGMainLoop
+from ..interfaces.server import Server
+
 class ZeroconfService:
     """A simple class to publish a network service with zeroconf using
     avahi.
@@ -15,7 +19,7 @@ class ZeroconfService:
 
     def publish(self):
         bus = dbus.SystemBus()
-        server = dbus.Interface(
+        self.server = dbus.Interface(
                          bus.get_object(
                                  avahi.DBUS_NAME,
                                  avahi.DBUS_PATH_SERVER),
@@ -23,7 +27,7 @@ class ZeroconfService:
 
         g = dbus.Interface(
                     bus.get_object(avahi.DBUS_NAME,
-                                   server.EntryGroupNew()),
+                                   self.server.EntryGroupNew()),
                     avahi.DBUS_INTERFACE_ENTRY_GROUP)
 
         g.AddService(avahi.IF_UNSPEC, avahi.PROTO_UNSPEC,dbus.UInt32(0),
@@ -42,3 +46,48 @@ class ZeroconfService:
 
     def unpublish(self):
         self.group.Reset()
+
+class AvahiLookUp():
+    # http://avahi.org/wiki/PythonBrowseExample
+    # Looks for iTunes shares
+
+    def __init__(self, TYPE):
+        
+        self.services = []
+        self.servers = []
+        loop = DBusGMainLoop()
+
+        bus = dbus.SystemBus(mainloop=loop)
+        dbus.set_default_main_loop(loop)
+
+        self.server = dbus.Interface(bus.get_object(avahi.DBUS_NAME, '/'), 'org.freedesktop.Avahi.Server')
+
+        sbrowser = dbus.Interface(bus.get_object(avahi.DBUS_NAME, self.server.ServiceBrowserNew(avahi.IF_UNSPEC, avahi.PROTO_UNSPEC, TYPE, 'local', dbus.UInt32(0))), avahi.DBUS_INTERFACE_SERVICE_BROWSER)
+
+        sbrowser.connect_to_signal("ItemNew", self.myhandler)
+
+        self.GObj = gobject.MainLoop()
+        self.GObj.run()
+
+
+    def service_resolved(self, *args):
+        name = args[2]
+        address = args[7]
+        port = args[8]
+        service = {"name": name, "address": address, "port": port}
+        server = Server(address, port)
+        self.services.append(service)
+        self.servers.append(server)
+        self.GObj.quit()
+
+    def print_error(self, *args):
+        print 'error_handler'
+        print args[0]
+
+    def myhandler(self, interface, protocol, name, stype, domain, flags):
+        if flags & avahi.LOOKUP_RESULT_LOCAL:
+                pass
+
+        self.server.ResolveService(interface, protocol, name, stype, 
+            domain, avahi.PROTO_UNSPEC, dbus.UInt32(0), 
+            reply_handler=self.service_resolved, error_handler=self.print_error)
