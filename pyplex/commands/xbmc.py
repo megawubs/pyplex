@@ -6,26 +6,22 @@ from ..pyplexlogger.logger import pyPlexLogger
 
 from pprint import pprint
 class xbmcCommands:
-    def __init__(self, omxArgs):
+    def __init__(self, omxArgs, server):
         self.l = pyPlexLogger("xbmcCommands").logger
         self.l.info('Initated xbmcCommands')
         self.media = None
+        self.plex = server
         self.omx = None
         self.omxArgs = omxArgs
         self.shutDown = False
 
     def PlayMedia(self, fullpath, tag, unknown1, unknown2, unknown3):
         self.l.info("playing media!")
-        global parsed_path
-        global media_key
-        global duration
-        global media
-        
-        parsed_path = urlparse(fullpath)
-        # get info to locate the server
-        ip, port = parsed_path.netloc.split(':')
-        # initate the plex API server wrapper
-        self.plex = Server(ip, port)
+        # global parsed_path
+        # global media_key
+        # global duration
+        # global media
+
         # Serach for media based on tag
         self.media = self.plex.getMedia(tag) #Media now contains all kind of information about the file
         # media.transcodeURL is currentley not working

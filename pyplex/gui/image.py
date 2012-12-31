@@ -1,4 +1,5 @@
 import pygame.image, pygame.display
+from ..interfaces.server import Server
 
 class image:
     def __init__(self, picture):

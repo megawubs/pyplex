@@ -3,7 +3,7 @@ from gui.image import image
 import platform
 from listeners.udplistener import udplistener
 from listeners.httplistener import httplistener
-from service.zeroconf import ZeroconfService
+from service.zeroconf import ZeroconfService, AvahiLookUp
 import Queue, sys
 from pprint import pprint
 from pyplexlogger.logger import pyPlexLogger
@@ -27,17 +27,20 @@ class pyPlex():
 		global parsed_path
 		global media_key
 		global duration
+		self.server = AvahiLookUp("_plexmediasvr._tcp").servers[0]
+		pprint(self.server)
 		self.service = ZeroconfService(name=self.hostname + " PyPlex", port=3000, text=["machineIdentifier=" + self.hostname,"version=2.0"])
 		self.service.publish()
 		self.duration = 0
-		self.xbmcCmmd = xbmcCommands(self.omxCommand)
+		self.queue = Queue.Queue()
+		self.xbmcCmmd = xbmcCommands(self.omxCommand, self.server)
 		self.media_key = None
 		self.parsed_path = None
-		self.queue = Queue.Queue()
 		self.udp = udplistener(self.queue)
 		self.udp.start()
 		self.http = httplistener(self.queue)
 		self.http.start()
+
 		# __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 		# f = open(os.path.join(__location__, 'image/logo.png'));
 		# image = image(f)
