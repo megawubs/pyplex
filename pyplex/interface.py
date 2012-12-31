@@ -44,8 +44,7 @@ class pyPlex():
 		#image.set()
 		
 	def run(self):
-		"""Run pyPlex"""
-		print "Starting pyPlex..."
+		"""The heart of pyPlex (can you hear it pounding...?)"""
 		self.l.info("Running pyplex")
 		try:
 			while True:
@@ -59,8 +58,6 @@ class pyPlex():
 					if(self.xbmcCmmd.shutDown == True):
 						self.stop()
 						break
-				else:
-					print 'no command...'
 		except Exception, e:
 			exc_type, exc_obj, exc_tb = sys.exc_info()
 			fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
