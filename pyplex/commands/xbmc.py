@@ -1,5 +1,4 @@
-from ..interfaces.plexInterface import PlexInterface
-from ..interfaces.server import Server
+from ..plexAPI.server import Server
 from ..pyomx.pyomxplayer import OMXPlayer
 
 from urlparse import urlparse
