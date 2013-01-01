@@ -1,8 +1,8 @@
 import avahi, dbus, sys, platform, gobject, threading
-from ..pyplexlogger.logger import pyPlexLogger
+from pyplexlogger.logger import pyPlexLogger
 from dbus import DBusException
 from dbus.mainloop.glib import DBusGMainLoop
-from ..plexAPI.server import Server
+from plexAPI.server import Server
 
 class ZeroconfService:
     """A simple class to publish a network service with zeroconf using

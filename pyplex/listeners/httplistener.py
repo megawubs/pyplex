@@ -2,7 +2,7 @@ import threading
 import socket
 import urllib2
 import tornado.ioloop, tornado.web
-from ..pyplexlogger.logger import pyPlexLogger
+from pyplexlogger.logger import pyPlexLogger
 
 class listenerClass(tornado.web.RequestHandler):
 

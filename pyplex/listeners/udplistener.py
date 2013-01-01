@@ -1,6 +1,6 @@
 import threading
 import socket
-from ..pyplexlogger.logger import pyPlexLogger
+from pyplexlogger.logger import pyPlexLogger
 
 class udplistener(threading.Thread):
     def __init__(self, queue):

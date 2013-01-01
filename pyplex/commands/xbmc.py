@@ -1,8 +1,8 @@
-from ..plexAPI.server import Server
-from ..pyomx.pyomxplayer import OMXPlayer
+from plexAPI.server import Server
+from pyomx.pyomxplayer import OMXPlayer
 
 from urlparse import urlparse
-from ..pyplexlogger.logger import pyPlexLogger
+from pyplexlogger.logger import pyPlexLogger
 
 from pprint import pprint
 class xbmcCommands:

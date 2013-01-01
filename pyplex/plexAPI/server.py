@@ -1,7 +1,7 @@
 from library import Library
 from client import Client
 from media import Media
-from ..pyplexlogger.logger import pyPlexLogger
+from pyplexlogger.logger import pyPlexLogger
 import base64
 
 import urllib2
