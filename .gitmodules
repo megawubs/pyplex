@@ -1,3 +1,0 @@
-[submodule "pyplex/interfaces/plexAPI"]
-	path = pyplex/interfaces/plexAPI
-	url = https://github.com/megawubs/plex-api-wrapper.git
