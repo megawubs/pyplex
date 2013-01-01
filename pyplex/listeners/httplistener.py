@@ -2,6 +2,7 @@ import threading
 import socket
 import urllib2
 import tornado.ioloop, tornado.web
+from pyplexlogger.logger import pyPlexLogger
 
 class listenerClass(tornado.web.RequestHandler):
 
@@ -9,36 +10,37 @@ class listenerClass(tornado.web.RequestHandler):
         self.queue = queue
 
     def get(self):
+        self.l = pyPlexLogger('httplistener').logger
         string = self.get_argument("command")
-        print string
         front = string.index("(")
         end = string.rindex(")")
-        print "Front: %d, End: %d" %(front, end)
         command = string[:front]
         commandargs = string[front+1:end].split(';')
-        # print command
-        #print commandargs
-        print "Got HTTP command %s, args: %s" % (command, commandargs)
         self.queue.put((command, commandargs))
         self.write("received")
 
 class hello(tornado.web.RequestHandler):
     def get(self):
-        print("Got request, gave Hello")
         self.write('Hello, World')
 
 class httplistener(threading.Thread):
     def __init__(self, queue):
         super(httplistener, self).__init__()
+        self.error = False
+        self.l = pyPlexLogger('httplistener').logger
         self.queue = queue
         self._stop = threading.Event()
         self.app = tornado.web.Application([(r'/xbmcCmds/xbmcHttp', listenerClass, dict(queue=queue)), (r'/', hello)])
         self.ioloop = tornado.ioloop.IOLoop.instance()
-        print "HTTP Init done"
+        self.l.info("HTTP Init done")
 
     def run(self):
-        self.app.listen(3000)
-        print "Started HTTP listener"
+        try:
+            self.app.listen(3000)
+            self.l.info("Started HTTP listener")
+        except Exception, e:
+            self.l.error(e)
+            self.error = True
         self.ioloop.start()
 
     def ioloop_stop(self):
