@@ -10,7 +10,6 @@ class udplistener(threading.Thread):
         self._stop = threading.Event()
 
     def run(self):
-        print "Started UDP listener"
         self.l.info("Started UDP listener")
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
         sock.bind(("0.0.0.0",9777))
@@ -20,8 +19,7 @@ class udplistener(threading.Thread):
                 data, addr = sock.recvfrom(1024)
                 index = data.rindex("\x02");
                 command = data[index+1:-1]
-                print "Got UDP Command %s" % command
-                self.l.info("Got UDP Command %s" % command)
+                # self.l.info("Got UDP Command %s" % command)
                 self.queue.put((command, [u'']))
             except socket.timeout:
                 pass

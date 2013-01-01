@@ -36,23 +36,17 @@ class ZeroconfService:
 
         g.Commit()
         self.group = g
-        print 'Service published'
-        self.l.info('Published avahi Service')
-        self.l.info('Name: %s' % self.name)
-        self.l.info('Port: %s' % self.port)
-        self.l.info('Domain: %s' % self.domain)
-        self.l.info('Host: %s' % self.host)
-        self.l.info('Text: %s' % self.text)
+        self.l.info("'Published avahi Service with name '%s' on port %d with text '%s'" % (self.name, self.port, self.text))
 
     def unpublish(self):
         self.group.Reset()
 
 class AvahiLookUp():
-    # http://avahi.org/wiki/PythonBrowseExample
-    # Looks for iTunes shares
+    # Looks for Avahi shares
 
     def __init__(self, TYPE):
-        
+        self.l = pyPlexLogger('AvahiLookUp').logger
+        self.l.info('Looking for %s type Avahi shares' % TYPE)
         self.services = []
         self.servers = []
         loop = DBusGMainLoop()
@@ -74,15 +68,20 @@ class AvahiLookUp():
         name = args[2]
         address = args[7]
         port = args[8]
+
+        self.l.info("Found Service '%s' at %s on port %d" % (name, address, port))
+
         service = {"name": name, "address": address, "port": port}
+        # Initate plex api and make server object
         server = Server(address, port)
         self.services.append(service)
+        # Add server to servers list
         self.servers.append(server)
         self.GObj.quit()
 
     def print_error(self, *args):
-        print 'error_handler'
-        print args[0]
+        self.l.error('error_handler')
+        self.l.error(args[0])
 
     def myhandler(self, interface, protocol, name, stype, domain, flags):
         if flags & avahi.LOOKUP_RESULT_LOCAL:

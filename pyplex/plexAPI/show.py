@@ -1,17 +1,17 @@
 from season import Season
 from episode import Episode
+from info import Info
 
 class Show(object):
     def __init__(self, element, server):
+        self.element = element
         self.server = server
         self.type = 'show'
-        self.key = element.attrib['key']
-        self.title = element.attrib['title']
-        self.summary = element.attrib['summary']
-        
-        self.genres = [e.attrib['tag'] for e in element.findall('.Genre')]
-        self.collections = [e.attrib['tag'] for e in element.findall('.Collection')]
-        
+        info = Info(self, server).info
+        # Add value of info[k] to property named as the value of k  
+        for k in info:
+            setattr(self.__class__, k,  info[k])
+
         self.seasons_ = []
     
     def __len__(self):

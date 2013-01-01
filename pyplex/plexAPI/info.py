@@ -1,31 +1,46 @@
 import uuid, hmac, hashlib, base64, time
 from urllib import urlencode
 from urlparse import urlparse
-from pprint import pprint
 
 class Info(object):
 	"""Get info of media"""
 	def __init__(self, media, server):
-		self.str = '<Info Object Type: %s, Title: %s>'
-		element = media.element
-		mediaElement = element.find('.Media')
-
-		key = element.attrib['key']
+		_type = media.type
 		self.media = media
+		self.element = self.media.element
+		# key = element.attrib['key']
 		self.server = server
 		self.serverAddr = 'http://%s:%d' % (server.address, server.port)
 		self.info = {}
+		self.str = '<Info Object Type: %s, Title: %s>'
+		if _type == 'episode':
+			self.getEpisodeInfo()
+		elif _type == 'movie':
+			self.getMovieInfo()
+		elif _type == 'show':
+			self.getShowInfo()
+		elif _type == 'season':
+			self.getSeasonInfo()
+	 
+	def getGlobalInfo(self):
+		element = self.element
+		self.info['key'] =  element.attrib['key']
+	 	self.info['ratingKey'] = element.attrib['ratingKey']
+	 	self.info['type'] = self.media.type
+	 	self.info['title'] = element.attrib['title']
+	 	self.info['summary'] = element.attrib['summary']
+	 	self.info['thumb'] = element.attrib['thumb']
+	 	self.info['art'] = element.attrib['art']
+	 	if 'parentKey' in element.attrib:
+	 		self.info['parent'] = self.server.getMedia(element.attrib['parentKey'])
+ 	 	if 'index' in element.attrib:
+ 			self.info['index'] = int(element.attrib['index'])
+ 		if 'year' in element.attrib:
+ 			self.year = int(element.attrib['year'])
 
-		self.info['key'] =  key
-		self.info['ratingKey'] = element.attrib['ratingKey']
-		self.info['type'] = media.type
-		self.info['title'] = element.attrib['title']
-		self.info['summary'] = element.attrib['summary']
-
-		if 'index' in element.attrib:
-			self.info['index'] = int(element.attrib['index'])
-		if 'year' in element.attrib:
-			self.year = int(element.attrib['year'])
+	def getGlobalMediaInfo(self):
+		element = self.element
+	 	mediaElement = element.find('.Media')
 
 		self.info['duration'] = int(mediaElement.attrib['duration'])
 		self.info['viewed'] = ('viewCount' in element.attrib) and (element.attrib['viewCount'] == '1')
@@ -41,7 +56,24 @@ class Info(object):
 	 	self.info['scrobbleURL'] = "scrobble?key=%s&identifier=com.plexapp.plugins.library"
 	 	self.info['fileURL'] = "%s%s" % (self.serverAddr, element.find('.Media/Part').attrib['key'])
 	 	self.info['transcodeURL'] = self.getTranscodeURL()
+
+	def getEpisodeInfo(self):
+	 	self.getGlobalInfo()
+	 	self.getGlobalMediaInfo()
+
+	def getMovieInfo(self):
+	 	self.getGlobalInfo()
+	 	self.getGlobalMediaInfo()
+
+	def getShowInfo(self):
+	 	self.getGlobalInfo()
+	 	element = self.element
+	 	self.info['collections'] = [e.attrib['tag'] for e in element.findall('.Collection')]
+	 	self.info['gernes'] = [e.attrib['tag'] for e in element.findall('.Genre')]
 	 	
+	def getSeasonInfo(self):
+		self.getGlobalInfo()
+
 
 	def getTranscodeURL(self, extension='mkv', format='matroska', videoCodec='libx264', audioCodec=None, continuePlay=False, continueTime=None, videoWidth='1280', videoHeight='720', videoBitrate=None):
 		if(videoWidth > self.info['width']):

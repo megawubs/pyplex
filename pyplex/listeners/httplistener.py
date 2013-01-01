@@ -10,20 +10,19 @@ class listenerClass(tornado.web.RequestHandler):
         self.queue = queue
 
     def get(self):
+        self.l = pyPlexLogger('httplistener').logger
         string = self.get_argument("command")
-        print string
         front = string.index("(")
         end = string.rindex(")")
-        print "Front: %d, End: %d" %(front, end)
+        # print "Front: %d, End: %d" %(front, end)
         command = string[:front]
         commandargs = string[front+1:end].split(';')
-        print "Got HTTP command %s, args: %s" % (command, commandargs)
+        # self.l.info("Got HTTP command %s, args: %s" % (command, commandargs))
         self.queue.put((command, commandargs))
         self.write("received")
 
 class hello(tornado.web.RequestHandler):
     def get(self):
-        print("Got request, gave Hello")
         self.write('Hello, World')
 
 class httplistener(threading.Thread):
@@ -34,12 +33,10 @@ class httplistener(threading.Thread):
         self._stop = threading.Event()
         self.app = tornado.web.Application([(r'/xbmcCmds/xbmcHttp', listenerClass, dict(queue=queue)), (r'/', hello)])
         self.ioloop = tornado.ioloop.IOLoop.instance()
-        print "HTTP Init done"
         self.l.info("HTTP Init done")
 
     def run(self):
         self.app.listen(3000)
-        print "Started HTTP listener"
         self.l.info("Started HTTP listener")
         self.ioloop.start()
 

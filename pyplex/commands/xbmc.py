@@ -16,10 +16,10 @@ class xbmcCommands:
         self.shutDown = False
 
     def PlayMedia(self, fullpath, tag, unknown1, unknown2, unknown3):
-        self.l.info("playing media!")
         # Serach for media based on tag
         self.media = self.plex.getMedia(tag) #Media now contains all kind of information about the file
-        # media.transcodeURL is currentley not working
+        self.l.info("Playing %s from %s" % (self.media, self.media.transcodeURL))
+        
         if(self.omx):
             self.Stop()
 

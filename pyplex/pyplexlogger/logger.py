@@ -9,3 +9,4 @@ class pyPlexLogger:
 		handler.setFormatter(formatter)
 		self.logger.addHandler(handler)
 		self.logger.setLevel(logging.INFO)
+		self.logger.propagate = False

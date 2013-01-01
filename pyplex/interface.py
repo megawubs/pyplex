@@ -10,12 +10,13 @@ from pyplexlogger.logger import pyPlexLogger
 class pyPlex():
 	"""Wrapper class for pyPlex"""
 	def __init__(self, arg):
-		self.l = pyPlexLogger('pyplex').logger
+		self.l = pyPlexLogger('PyPlex').logger
+		self.l.info("Starting up...")
 		self.omxCommand = self.getArg(arg)
 		self.hostname = platform.uname()[1]
 		self.server = AvahiLookUp("_plexmediasvr._tcp").servers[0]
 		# TODO stop script if no server is found
-		self.l.info("located the server at %s: %d" % (self.server.address, self.server.port))
+		
 
 
 	def start(self):
@@ -38,7 +39,7 @@ class pyPlex():
 		
 	def run(self):
 		"""The heart of pyPlex (can you hear it pounding...?)"""
-		self.l.info("Running pyplex")
+		self.l.info("Running PyPlex")
 		try:
 			while True:
 				# check if xmbc is running
@@ -59,23 +60,23 @@ class pyPlex():
 		except Exception, e:
 			exc_type, exc_obj, exc_tb = sys.exc_info()
 			fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-			print(exc_type, fname, exc_tb.tb_lineno) 
-			print "Caught exception"
+			self.l.error("Caught exception")
+			self.l.error(exc_type, fname, exc_tb.tb_lineno) 
 			message = 'There went something wrong in %s'
 			if(self.xbmcCmmd):
-				print message % 'xbmc'
-				print e
+				self.l.error(message % 'xbmc')
+				self.l.error(e) 
 				self.xbmcCmmd.Stop("")
 				self.stop()
 				return 0
 			if(udp):
-				print message % 'udp'
-				print e
+				self.l.error(message % 'udp')
+				self.l.error(e)
 				self.udp.stop()
 				self.udp.join()
 			if(http):
-				print message % 'http'
-				print e
+				self.l.error(message % 'http')
+				self.l.error(e)
 				self.http.stop()
 				self.http.join()
 			raise
@@ -84,19 +85,18 @@ class pyPlex():
 		if len(arg) > 1: 
 			if arg[1] == "hdmi":
 				self.omxCommand = '-o hdmi'
-				print "Audo output over HDMI"
 				self.l.info("Audo output over HDMI")
 		else:
 			self.omxCommand = ''
-			print "Audio output over 3,5mm jack"
+			self.l.info("Audio output over 3,5mm jack")
 
 	def parseCommand(self):
 		"""Get commands from the queue"""
 		try:
 			command, args = self.queue.get(True, 2)
-			print "Got command: %s, args: %s" %(command, args)
+			self.l.info("Got command: %s, args: %s" %(command, args))
 			if not hasattr(self.xbmcCmmd, command):
-				print "Command %s not implemented yet" % command
+				self.l.error("Command %s not implemented yet" % command)
 			else:
 				func = getattr(self.xbmcCmmd, command)
 				# Retun the function + it's arguments
@@ -110,5 +110,6 @@ class pyPlex():
 		self.udp.stop()
 		self.http.stop()
 		self.service.unpublish()
+		self.l.info('Stopped PyPlex')
 
 		

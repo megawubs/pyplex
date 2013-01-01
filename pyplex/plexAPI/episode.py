@@ -7,14 +7,11 @@ class Episode(object):
         self.server = server
         self.element = element
         self.type = "episode"
+        # Get infor of object
         info = Info(self, server).info
+        # Add value of info[k] to property named as the value of k  
         for k in info:
             setattr(self.__class__, k,  info[k])
-        # self.transcodeBaseURL = parsed_path.scheme + "://" + parsed_path.netloc
-        # self.transcodeURL = '/video/:/transcode/segmented/start.m3u8?'
-        
-        # parsed_path = urlparse(mediaurl)
-        # self.fileURL = parsed_path.scheme + "://" + parsed_path.netloc + self.partTag.attrib['key']
         
 
     def __str__(self):

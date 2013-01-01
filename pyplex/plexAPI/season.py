@@ -1,13 +1,17 @@
 from episode import Episode
+from info import Info
 
 class Season(object):
     
     def __init__(self, element, server):
-        self.key = element.attrib['key']
+        self.element = element
         self.server = server
         self.type = 'season'
-        self.title = element.attrib['title']
-        self.index = int(element.attrib['index'])
+        # Get infor of object
+        info = Info(self, server).info
+        # Add value of info[k] to property named as the value of k  
+        for k in info:
+            setattr(self.__class__, k,  info[k])
         self.episodes_ = []
     
     def __len__(self):

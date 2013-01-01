@@ -1,6 +1,7 @@
 from library import Library
 from client import Client
 from media import Media
+from ..pyplexlogger.logger import pyPlexLogger
 import base64
 
 import urllib2
@@ -13,6 +14,7 @@ class Server(object):
     transcode_public = 'KQMIY6GATPC63AIMC4R2'
 
     def __init__(self, address, port=32400):
+        self.l = pyPlexLogger('PlexAPI').logger
         # TODO: clean up address, remove http:// etc
         
         # remove slash at end of address
@@ -24,6 +26,7 @@ class Server(object):
         
         
     def execute(self, path):
+        self.l.info("execute %s" % path)
         if path[0] == '/':
             path = path[1:]
             
@@ -31,10 +34,11 @@ class Server(object):
         try: 
             urllib2.urlopen("http://%s:%d/%s" % (self.address, self.port, path)) 
         except urllib2.URLError, e:
-            print e
+            self.l.error("Reading %s failed. %s" % (path, e))
 
         
     def query(self, path):
+        self.l.info("Query %s" % path)
         if path[0] == '/':
             path = path[1:]
             
@@ -42,10 +46,11 @@ class Server(object):
         try:
             response = urllib2.urlopen("http://%s:%d/%s" % (self.address, self.port, path))
         except urllib2.URLError, e:
-            print e
+            self.l.error("Reading %s failed. %s" % (path, e))
         
         # create element from xml data
         xmldata = response.read()
+        self.l.info("Got response: %s" % xmldata)
         element = XML(xmldata)
         return element
     
