@@ -7,7 +7,4 @@ if __name__ == "__main__":
 	args = sys.argv
 	plex = pyPlex(args)
 	plex.start()
-	try:
-		plex.run()
-	except:
-		"error while trying to start pyplex"
+	plex.run()
