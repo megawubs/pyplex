@@ -42,13 +42,7 @@ Stop with
 
 	python pyplex stop
 
-## Debugging and logging
-
-In the root folder of pyplex do
-	
-	tail -f pyplex.log
-
-to see all logging information.
+## Control
 
 To control playback you can use the remote tab on your iDevice or android device.
 Currently the following commands are supported:
@@ -60,6 +54,13 @@ Fastbackward
 Stop
 ```
 
+## Debugging and logging
+
+In the root folder of pyplex do
+	
+	tail -f pyplex.log
+
+to see all logging information.
 Support can be found on the [Plex forum][plexForum] 
 
 
