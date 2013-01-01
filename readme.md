@@ -28,14 +28,19 @@ functionality is here, but I hope that it is reasonably easy to extend.
 
 Launch with 
 
-    python pyplex.py [hdmi]
+    python pyplex [hdmi] &
 
 Where [hdmi] is optional to make sure audio is going
 over hdmi, leaving it out will devault to the 3,5mm jack output.
+The `&` makes it run in the background.
 
 Then 'Raspberry Plex' should appear as a player you can choose in your Plex
 client. Choose your media, and select this as the player to play it on. It should 
 begin playing on your Raspberry Pi! 
+
+Stop with 
+
+	python pyplex stop
 
 ## Debugging and logging
 

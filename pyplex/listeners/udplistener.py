@@ -8,11 +8,17 @@ class udplistener(threading.Thread):
         self.l = pyPlexLogger('udplistener').logger
         self.queue = queue
         self._stop = threading.Event()
+        self.error = False
 
     def run(self):
-        self.l.info("Started UDP listener")
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
-        sock.bind(("0.0.0.0",9777))
+        try:
+            sock.bind(("0.0.0.0",9777))
+            self.l.info("Started UDP listener")
+        except Exception, e:
+            self.l.error(e)
+            self.error = True
+
         sock.settimeout(2)
         while not self.stopped():
             try:
