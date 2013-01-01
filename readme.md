@@ -42,6 +42,9 @@ Stop with
 
 	python pyplex stop
 
+To make it run in the background at boottime do `crontab -e` and add
+	@reboot python /path/to/pyplex/pyplex
+
 ### Control
 
 To control playback you can use the remote tab on your iDevice or android device.
