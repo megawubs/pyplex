@@ -42,7 +42,7 @@ Stop with
 
 	python pyplex stop
 
-## Control
+### Control
 
 To control playback you can use the remote tab on your iDevice or android device.
 Currently the following commands are supported:
