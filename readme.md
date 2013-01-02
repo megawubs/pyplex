@@ -42,6 +42,22 @@ Stop with
 
 	python pyplex stop
 
+To make it run in the background at boottime do `crontab -e` and add
+
+	@reboot python /path/to/pyplex/pyplex
+
+### Control
+
+To control playback you can use the remote tab on your iDevice or android device.
+Currently the following commands are supported:
+```
+Play
+Pauze
+Fastforward
+Fastbackward
+Stop
+```
+
 ## Debugging and logging
 
 In the root folder of pyplex do
@@ -49,8 +65,9 @@ In the root folder of pyplex do
 	tail -f pyplex.log
 
 to see all logging information.
+Support can be found on the [Plex forum][plexForum] 
 
-I must reiterate how bare-bones this is. Once you start playing the media, you either
-wait for it to finish, or 
-    
-    killall omxplayer.bin
+
+[plexForum]: http://forums.plexapp.com/index.php/topic/35906-raspberry-pi
+
+

@@ -29,6 +29,7 @@ class OMXPlayer(object):
     subtitles_visible = True
 
     def __init__(self, mediafile, args=None, start_playback=False):
+        self.position = 0
         if not args:
             args = ""
         cmd = self._LAUNCH_CMD % (mediafile, args)
