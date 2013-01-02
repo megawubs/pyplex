@@ -71,7 +71,8 @@ In the root folder of pyplex do
 to see all logging information.
 Support can be found on the [Plex forum][plexForum] 
 
+If you want to know more about the pyplex code and how it works take a look [here][moreInfo]
 
 [plexForum]: http://forums.plexapp.com/index.php/topic/35906-raspberry-pi
-
+[moreInfo]: https://github.com/megawubs/pyplex/wiki/How-pyplex-works
 
