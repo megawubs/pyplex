@@ -48,7 +48,8 @@ Stop with
 
 To make it run in the background at boottime do `crontab -e` and add
 
-	@reboot python /path/to/pyplex/pyplex
+	@reboot python /path/to/pyplex
+
 
 ### Control
 
