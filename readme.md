@@ -23,6 +23,10 @@ functionality is here, but I hope that it is reasonably easy to extend.
 	sudo pip install pexpect
 	sudo apt-get install python-avahi 
 	sudo aptitude install python-gobject
+
+## installation
+
+	git clone https://github.com/megawubs/pyplex.git
 	
 ## How to use
 
