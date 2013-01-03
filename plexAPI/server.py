@@ -77,3 +77,7 @@ class Server(object):
         clist = [Client(e, self) for e in elem]
         return clist
 
+    # @property
+    # def servers(self):
+    #     elem = self.query("/servers")
+

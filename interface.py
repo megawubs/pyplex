@@ -87,9 +87,10 @@ class pyPlex():
 			self.stop()
 
 	def getArg(self, arg):
+		omxCommand = ''
 		if len(arg) > 1: 
 			if arg[1] == "hdmi":
-				self.omxCommand = '-o hdmi'
+				omxCommand = '-o hdmi'
 				self.l.info("Audo output over HDMI")
 			elif arg[1] == "stop":
 				path = "xbmcCmds/xbmcHttp?command=stopPyplex()"
@@ -99,8 +100,8 @@ class pyPlex():
 				    self.l.error("Reading %s failed. %s" % (path, e))
 				exit()
 		else:
-			self.omxCommand = ''
 			self.l.info("Audio output over 3,5mm jack")
+		return omxCommand
 
 	def parseCommand(self):
 		"""Get commands from the queue"""
