@@ -13,9 +13,9 @@ functionality is here, but I hope that it is reasonably easy to extend.
 	sudo wget https://raw.github.com/Hexxeh/rpi-update/master/rpi-update
 	sudo cp rpi-update /usr/local/bin/rpi-update
 	sudo chmod +x /usr/local/bin/rpi-update 
-	sudo rpi-update 192
-	sudo reboot
-	sudo vim config.txt > to set arm_freq to 1000
+	sudo rpi-update
+	cd /boot
+	sudo vim config.txt > to set arm_freq to 1000 and gpu_mem to 192
 	sudo reboot
 	sudo apt-get install avahi-daemon
 	sudo apt-get install python-pip
