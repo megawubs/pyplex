@@ -73,17 +73,19 @@ class AvahiLookUp():
         self.l.info("Found Service '%s' at %s on port %d" % (name, address, port))
 
         service = {"name": name, "address": address, "port": port}
+        self.services.append(service)
         # Initate plex api and make server object
         server = Server(address, port)
-        self.services.append(service)
+        
         # Add server to servers list
         self.servers.append(server)
 
     def __handle_all_for_now(self):
+        self.l.info("Found %d server(s)" % len(self.servers))
         self.GObj.quit()
 
     def print_error(self, *args):
-        self.l.error('error_handler')
+        self.l.error('Stumbeled upon some bad stuff..')
         self.l.error(args[0])
 
     def myhandler(self, interface, protocol, name, stype, domain, flags):

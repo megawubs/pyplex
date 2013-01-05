@@ -6,7 +6,7 @@ from pyplexlogger.logger import pyPlexLogger
 
 from pprint import pprint
 class xbmcCommands:
-    def __init__(self, omxArgs, servers=None):
+    def __init__(self, omxArgs):
         self.l = pyPlexLogger("xbmcCommands").logger
         self.l.info('Initated xbmcCommands')
         self.media = None
