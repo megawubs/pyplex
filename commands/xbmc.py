@@ -6,11 +6,10 @@ from pyplexlogger.logger import pyPlexLogger
 
 from pprint import pprint
 class xbmcCommands:
-    def __init__(self, omxArgs, servers):
+    def __init__(self, omxArgs, servers=None):
         self.l = pyPlexLogger("xbmcCommands").logger
         self.l.info('Initated xbmcCommands')
         self.media = None
-        self.servers = servers
         self.omx = None
         self.omxArgs = omxArgs
         self.shutDown = False
@@ -110,11 +109,7 @@ class xbmcCommands:
         requestInfo = urlparse(reqestUrl)
         address = requestInfo.netloc
         ip, port = address.split(':')
-        return Server(ip, port) 
-        # self.l.info('Searching for server with ip %s' % address)
-        # for server in self.servers:
-        #     if server.address is address:
-        #         return server
+        return Server(ip, port)
 
 # test = xbmcCommands('')
 # test.PlayMedia('http://192.168.1.201:32400/library/onDeck', '/library/metadata/1713', '+', ' ', ' ')
