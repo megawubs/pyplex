@@ -41,8 +41,8 @@ class Info(object):
 	def getGlobalMediaInfo(self):
 		element = self.element
 	 	mediaElement = element.find('.Media')
-
-		self.info['duration'] = int(mediaElement.attrib['duration'])
+	 	if 'duration' in mediaElement.attrib:
+			self.info['duration'] = int(mediaElement.attrib['duration'])
 		self.info['viewed'] = ('viewCount' in element.attrib) and (element.attrib['viewCount'] == '1')
 		self.info['offset'] = int(element.attrib['viewOffset']) if 'viewOffset' in element.attrib else 0
 		self.info['file'] = element.find('.Media/Part').attrib['file']
