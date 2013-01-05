@@ -11,8 +11,8 @@ class pyPlex():
 	def __init__(self, arg):
 		self.l = pyPlexLogger('PyPlex').logger
 		self.canStart = True
-		self.l.info("Starting up...")
 		self.omxCommand = self.getArg(arg)
+		self.l.info("Starting up...")
 		self.hostname = platform.uname()[1]
 		self.server = AvahiLookUp("_plexmediasvr._tcp").servers[0]
 		# TODO stop script if no server is found

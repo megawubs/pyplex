@@ -23,7 +23,7 @@ class xbmcCommands:
         
         if(self.omx):
             self.Stop()
-
+        self.l.info('Starting OMXPlayer wiht %s as argument' % self.omxArgs)
         self.omx = OMXPlayer(self.media.transcodeURL, args=self.omxArgs, start_playback=True)
 
     def Pause(self, message):
