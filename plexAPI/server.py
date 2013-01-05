@@ -1,7 +1,10 @@
 from library import Library
 from client import Client
 from media import Media
-from pyplexlogger.logger import pyPlexLogger
+try:
+    from pyplexlogger.logger import pyPlexLogger
+except ImportError:
+    pass
 import base64
 
 import urllib2
@@ -14,7 +17,10 @@ class Server(object):
     transcode_public = 'KQMIY6GATPC63AIMC4R2'
 
     def __init__(self, address, port=32400):
-        self.l = pyPlexLogger('PlexAPI').logger
+        try:
+            self.l = pyPlexLogger('PlexAPI').logger
+        except Exception:
+            pass
         # TODO: clean up address, remove http:// etc
         
         # remove slash at end of address
@@ -26,7 +32,7 @@ class Server(object):
         
         
     def execute(self, path):
-        self.l.info("execute %s" % path)
+        self.log("execute %s" % path)
         if path[0] == '/':
             path = path[1:]
             
@@ -34,11 +40,11 @@ class Server(object):
         try: 
             urllib2.urlopen("http://%s:%d/%s" % (self.address, self.port, path)) 
         except urllib2.URLError, e:
-            self.l.error("Reading %s failed. %s" % (path, e))
+            self.log("Reading %s failed. %s" % (path, e))
 
         
     def query(self, path):
-        self.l.info("Query %s" % path)
+        self.log("Query %s" % path)
         if path[0] == '/':
             path = path[1:]
             
@@ -46,11 +52,11 @@ class Server(object):
         try:
             response = urllib2.urlopen("http://%s:%d/%s" % (self.address, self.port, path))
         except urllib2.URLError, e:
-            self.l.error("Reading %s failed. %s" % (path, e))
+            self.log("Reading %s failed. %s" % (path, e))
         
         # create element from xml data
         xmldata = response.read()
-        self.l.info("Got response: %s" % xmldata)
+        self.log("Got response: %s" % xmldata)
         element = XML(xmldata)
         return element
     
@@ -61,6 +67,24 @@ class Server(object):
     def __repr__(self):
         return "<Server: %s:%d/>" % (self.address, self.port) 
     
+    def log(self, string):
+        try:
+            self.l.info(string)
+        except Exception:
+            print string
+            pass
+
+    def loadServer(self, elem):
+        list = []
+        ip = elem.attrib['host']
+        if '.local' in ip:
+            ip = elem.attrib['address']
+
+        port = elem.attrib['port']
+
+        
+        return Server(ip, port)
+
     def getMedia(self, mediaPath):
         result = self.query(mediaPath)
         media = Media(result, self)
@@ -77,7 +101,12 @@ class Server(object):
         clist = [Client(e, self) for e in elem]
         return clist
 
-    # @property
-    # def servers(self):
-    #     elem = self.query("/servers")
+    @property
+    def servers(self):
+        elem = self.query("/servers")
+        # get all other servers known by this server
+        slist = [self.loadServer(e) for e in elem]
+        # filter on None elements before returning
+        return [f for f in slist if f != None]
+
 
