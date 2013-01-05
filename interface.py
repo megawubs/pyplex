@@ -1,6 +1,6 @@
 from commands.xbmc import xbmcCommands
 from gui.image import image
-import platform, Queue, sys, urllib2
+import platform, Queue, sys, urllib2, os
 from listeners.udplistener import udplistener
 from listeners.httplistener import httplistener
 from service.zeroconf import ZeroconfService, AvahiLookUp
@@ -26,7 +26,7 @@ class pyPlex():
 		self.service.publish()
 		self.duration = 0
 		self.queue = Queue.Queue()
-		self.xbmcCmmd = xbmcCommands(self.omxCommand, self.server)
+		self.xbmcCmmd = xbmcCommands(self.omxCommand, self.server.servers)
 		self.udp = udplistener(self.queue)
 		self.udp.start()
 		self.http = httplistener(self.queue)

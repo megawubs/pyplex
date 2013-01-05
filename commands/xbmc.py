@@ -6,16 +6,17 @@ from pyplexlogger.logger import pyPlexLogger
 
 from pprint import pprint
 class xbmcCommands:
-    def __init__(self, omxArgs, server):
+    def __init__(self, omxArgs, servers):
         self.l = pyPlexLogger("xbmcCommands").logger
         self.l.info('Initated xbmcCommands')
         self.media = None
-        self.plex = server
+        self.servers = servers
         self.omx = None
         self.omxArgs = omxArgs
         self.shutDown = False
 
     def PlayMedia(self, fullpath, tag, unknown1, unknown2, unknown3):
+        self.plex = self.getServer(fullpath)
         # Serach for media based on tag
         self.media = self.plex.getMedia(tag) #Media now contains all kind of information about the file
         self.l.info("Playing %s from %s" % (self.media, self.media.transcodeURL))
@@ -104,6 +105,16 @@ class xbmcCommands:
                 self.plex.execute(self.media.updateURL % (self.media.key, self.getPosMilli()))
         except Exception, e:
             print e
+
+    def getServer(self, reqestUrl):
+        requestInfo = urlparse(reqestUrl)
+        address = requestInfo.netloc
+        ip, port = address.split(':')
+        return Server(ip, port) 
+        # self.l.info('Searching for server with ip %s' % address)
+        # for server in self.servers:
+        #     if server.address is address:
+        #         return server
 
 # test = xbmcCommands('')
 # test.PlayMedia('http://192.168.1.201:32400/library/onDeck', '/library/metadata/1713', '+', ' ', ' ')
