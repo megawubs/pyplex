@@ -14,7 +14,7 @@ class pyPlex():
 		self.omxCommand = self.getArg(arg)
 		self.l.info("Starting up...")
 		self.hostname = platform.uname()[1]
-		# self.server = AvahiLookUp("_plexmediasvr._tcp").servers[0]
+		self.server = AvahiLookUp("_plexmediasvr._tcp").servers[0]
 		# TODO stop script if no server is found
 		
 
@@ -26,7 +26,8 @@ class pyPlex():
 		self.service.publish()
 		self.duration = 0
 		self.queue = Queue.Queue()
-		self.xbmcCmmd = xbmcCommands(self.omxCommand)
+		self.xbmcCmmd = xbmcCommands(self.omxCommand, self.server.servers)
+		# self.xbmcCmmd = xbmcCommands(self.omxCommand)
 		self.udp = udplistener(self.queue)
 		self.udp.start()
 		self.http = httplistener(self.queue)

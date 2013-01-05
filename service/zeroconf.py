@@ -59,6 +59,7 @@ class AvahiLookUp():
         sbrowser = dbus.Interface(bus.get_object(avahi.DBUS_NAME, self.server.ServiceBrowserNew(avahi.IF_UNSPEC, avahi.PROTO_UNSPEC, TYPE, 'local', dbus.UInt32(0))), avahi.DBUS_INTERFACE_SERVICE_BROWSER)
 
         sbrowser.connect_to_signal("ItemNew", self.myhandler)
+        sbrowser.connect_to_signal("AllForNow", self.__handle_all_for_now)
 
         self.GObj = gobject.MainLoop()
         self.GObj.run()
@@ -77,6 +78,8 @@ class AvahiLookUp():
         self.services.append(service)
         # Add server to servers list
         self.servers.append(server)
+
+    def __handle_all_for_now(self):
         self.GObj.quit()
 
     def print_error(self, *args):
