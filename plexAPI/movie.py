@@ -9,9 +9,9 @@ class Movie(object):
         self.type = 'movie'
         info = Info(self, server).info
         for k in info:
-            setattr(self.__class__, k,  info[k])
+            setattr(self, k,  info[k])
 
-        if not hasattr(self.__class__, 'year'):
+        if not hasattr(self, 'year'):
             self.year = 0
     
     def __str__(self):
