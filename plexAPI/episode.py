@@ -11,7 +11,7 @@ class Episode(object):
         info = Info(self, server).info
         # Add value of info[k] to property named as the value of k  
         for k in info:
-            setattr(self.__class__, k,  info[k])
+            setattr(self, k,  info[k])
         
 
     def __str__(self):
